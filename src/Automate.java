@@ -1,5 +1,3 @@
-import com.sun.org.apache.xpath.internal.SourceTree;
-
 public class Automate{
     static boolean automate(String s){
         int etat = 1;
@@ -34,6 +32,7 @@ public class Automate{
         boolean res;
         if (args.length == 0){
             System.out.println("chaines attendues");
+        }else{
             for(int i = 0; i<args.length; i++){
                 System.out.println("Chaine testee : "+args[i]);
                 res=automate(args[i]);
