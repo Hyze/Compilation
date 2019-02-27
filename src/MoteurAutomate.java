@@ -71,7 +71,6 @@ public class MoteurAutomate {
                 str = str.replace("T","");
                 String[] tab = str.split(" ");
                 ArrayList<String> tab2 = new ArrayList<String>();
-                int indice =0;
                 for (String t :tab) {
                     if(!t.equals("")){
                         tab2.add((t);
@@ -138,17 +137,16 @@ public class MoteurAutomate {
     }
 
 
-    public void fonctionne(){
+    public void fonctionne(){ // cette fonction doit pouvoir faire fonctionner n'importe quel automate a partir d'un fichier .descr
         System.out.println("Mot d'entrée : "+affiche(VocEntrée));
         int EtatTemp=EtatInit;
         boolean continuer = true;
         String motRetour="";
         ArrayList temp ;
-        int indice =0;
-            for (int i = 0; i < Transitions.size(); i++) {
-                      temp = Transitions.get(i);
-                      for (int j=0;j<temp.size();i++){
-                          if(Integer.parseInt((String) temp.get(i)) == EtatTemp){
+            for (int i = 0; i < Transitions.size(); i++) { // on parcours l'array qui contient les transition
+                      temp = Transitions.get(i); //recup le transition courante
+                      for (int j=0;j<temp.size();i++){ // parcours la transition
+                          if(Integer.parseInt((String) temp.get(i)) == EtatTemp){ //On verify que le point de depart de la transition est bien le meme que l'etat init
 
                           }
                       }
