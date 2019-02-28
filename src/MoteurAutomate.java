@@ -6,7 +6,7 @@ import java.util.Scanner;
 public class MoteurAutomate {
     private String Commentaire ;
     private char Meta;
-    private ArrayList<String> VocEntrée;
+    private ArrayList<String> VocEntree;
     private ArrayList<String> VocSortie;
     private int Etat;
     private int EtatInit;
@@ -16,7 +16,7 @@ public class MoteurAutomate {
 
 
     public MoteurAutomate(){
-        this.VocEntrée = new ArrayList<>();
+        this.VocEntree = new ArrayList<>();
         this.VocSortie = new ArrayList<>();
         this.EtatAcceptant = new ArrayList();
         this.Transitions = new ArrayList<ArrayList>();
@@ -40,7 +40,7 @@ public class MoteurAutomate {
                     precoupe = precoupe.replace("\"","");
                     String [] Char = precoupe.split("(?!^)");
                     for (String s: Char) {
-                        this.VocEntrée.add(s);
+                        this.VocEntree.add(s);
                     }
                 }
             if(str.startsWith("O")){
@@ -146,6 +146,7 @@ public class MoteurAutomate {
 
 
             ArrayList tabtemp;
+            System.out.println("Entrez un mot : ");
             Scanner sc = new Scanner(System.in);
             mot = sc.nextLine();
 
@@ -160,14 +161,14 @@ public class MoteurAutomate {
                 boolean flague = true;
                 int EtatTemp = EtatInit;
                 boolean continuer = true;
-                System.out.println("Mot d'entrée : " + motLut);
+                System.out.println("Mot d'entree : " + motLut);
 
 
                 for (int i = 0; i < motLut.length(); i++) {
                     String temp = String.valueOf(motLut.charAt(i));
-                    if (!this.VocEntrée.contains(temp)) //on parcours le mot en entrée
+                    if (!this.VocEntree.contains(temp)) //on parcours le mot en entrée
                     {
-                        System.out.println("Caractère pas dans le vocabulaire d'entrée");
+                        System.out.println("Caractere pas dans le vocabulaire d'entree");
                         flague = false;
                         break;
                     }
@@ -194,7 +195,7 @@ public class MoteurAutomate {
 
                 if (flague) {
                     if (EtatAcceptant.contains((String.valueOf(EtatTemp)))) { //ici on verifie que l'etat sur lequel on est,est bien acceptant
-                        System.out.println("Acceptant -> mot validé : " + motRetour);
+                        System.out.println("Acceptant -> mot valide : " + motRetour);
                     } else {
                         System.out.println("Pas acceptant -> mot final non valide " + motRetour);
                     }
@@ -217,7 +218,7 @@ public class MoteurAutomate {
     public String toString(){
         return "Commentaire : "+Commentaire +"\n"+
                 "Meta : "+Meta+"\n"+
-                "Vocabulaire d'entrée : " + affiche(VocEntrée)+"\n" +
+                "Vocabulaire d'entree : " + affiche(VocEntree)+"\n" +
                 "Vocaublaire sortie : " + affiche(VocSortie) + "\n"+
                 "Nombre d'etat : "+Etat +"\n"+
                 "Etat initial  : "+ EtatInit+ "\n"+
