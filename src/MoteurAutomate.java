@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class MoteurAutomate {
     private String Commentaire ;
@@ -137,44 +138,56 @@ public class MoteurAutomate {
     }
 
 
-    public void fonctionne(String mot){ // cette fonction doit pouvoir faire fonctionner n'importe quel automate a partir d'un fichier .descr
-        System.out.println("Mot d'entrée : "+mot);
-        boolean flague = true ;
-        int EtatTemp=EtatInit;
+    public void fonctionne() { // cette fonction doit pouvoir faire fonctionner n'importe quel automate a partir d'un fichier .descr
+     String mot="";
+        while (true){
+            Scanner sc = new Scanner(System.in);
+            mot = sc.nextLine();
+            if(mot.equals("exit")){
+                break;
+            }
+            System.out.println("Mot d'entrée : " + mot);
+        boolean flague = true;
+        int EtatTemp = EtatInit;
         boolean continuer = true;
-        String motRetour="";
-        ArrayList tabtemp ;
-        for (int i =0;i<mot.length();i++){
+        String motRetour = "";
+        ArrayList tabtemp;
+        for (int i = 0; i < mot.length(); i++) {
             String temp = String.valueOf(mot.charAt(i));
-            if(!this.VocEntrée.contains(temp)) //on parcours le mot en entrée
+            if (!this.VocEntrée.contains(temp)) //on parcours le mot en entrée
             {
                 System.out.println("Caractère pas dans le vocabulaire d'entrée");
-                flague=false;
+                flague = false;
                 break;
             }
             for (int j = 0; j < Transitions.size(); j++) { // on parcours l'array qui contient les transition
                 tabtemp = Transitions.get(j); //recup le transition courante
-                                                // parcours la transition
-                    if(Integer.parseInt((String) tabtemp.get(0)) == EtatTemp){ //On verify que le point de depart de la transition est bien le meme que l'etat init
-                        if(temp.equals(tabtemp.get(1))){ //on verifie que le caractère du mot est bien celui qui va etre consommer
-                            System.out.println("Transition de "+EtatTemp+" vers "+(String) tabtemp.get(2));
-                            EtatTemp= Integer.parseInt(String.valueOf(tabtemp.get(2))); //changement d'etat
-                            if (tabtemp.size()==4) { // si il y a un caractère en sortit on le met dans mot retour
+                // parcours la transition
+                if (Integer.parseInt((String) tabtemp.get(0)) == EtatTemp) { //On verify que le point de depart de la transition est bien le meme que l'etat init
+                    if (temp.equals(tabtemp.get(1))) { //on verifie que le caractère du mot est bien celui qui va etre consommer
+                        System.out.println("Transition de " + EtatTemp + " vers " + (String) tabtemp.get(2));
+                        EtatTemp = Integer.parseInt(String.valueOf(tabtemp.get(2))); //changement d'etat
+                        if (tabtemp.size() == 4) { // si il y a un caractère en sortit on le met dans mot retour
+                            if (motRetour.equals("###")) {
+                                break;
+                            } else {
                                 motRetour += (String) tabtemp.get(3);
                             }
                         }
                     }
+                }
 
             }
 
         }
-        if(flague){
-            if(EtatAcceptant.contains((String.valueOf(EtatTemp)))){ //ici on verifie que l'etat sur lequel on est,est bien acceptant
-                System.out.println("Acceptant -> mot validé : "+motRetour);
-            }else {
+        if (flague) {
+            if (EtatAcceptant.contains((String.valueOf(EtatTemp)))) { //ici on verifie que l'etat sur lequel on est,est bien acceptant
+                System.out.println("Acceptant -> mot validé : " + motRetour);
+            } else {
                 System.out.println("Pas acceptant -> mot final non valide " + motRetour);
             }
         }
+    }
     }
 
 
@@ -184,7 +197,7 @@ public class MoteurAutomate {
     MoteurAutomate automate = new MoteurAutomate();
     automate.constructAutomate("testMoteur/S2.descr");
        System.out.println(automate);
-       automate.fonctionne("papa");
+       automate.fonctionne();
     }
 
 
