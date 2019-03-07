@@ -12,6 +12,8 @@ public class MoteurAutomate {
     private int EtatInit;
     private ArrayList EtatAcceptant;
     private ArrayList<ArrayList> Transitions;
+    private int EtatFinal ;
+    ArrayList<ArrayList> Etatslambda ;
 
 
 
@@ -20,9 +22,15 @@ public class MoteurAutomate {
         this.VocSortie = new ArrayList<>();
         this.EtatAcceptant = new ArrayList();
         this.Transitions = new ArrayList<ArrayList>();
+        this.Etatslambda = new ArrayList<ArrayList>();
         Meta='#';
         EtatInit=0;
+        EtatFinal=0;
 
+    }
+
+    public char getMeta() {
+        return Meta;
     }
 
     public void constructAutomate(String filename) throws IOException {
@@ -90,7 +98,7 @@ public class MoteurAutomate {
         }
 
 
-
+        constructEtats();
         fis.close();
     }
 
@@ -137,19 +145,30 @@ public class MoteurAutomate {
         return str;
     }
 
+    public void constructEtats() {
+        for (int i =0;i<Transitions.size();i++)
+        {
+            ArrayList temp = Transitions.get(i);
 
-    public void fonctionne() { // cette fonction doit pouvoir faire fonctionner n'importe quel automate a partir d'un fichier .descr
+            if(temp.get(1).equals("#"))
+            {
+                Etatslambda.add(temp);
+            }
+        }
+    }
+
+    public void fonctionne() throws Exception { // cette fonction doit pouvoir faire fonctionner n'importe quel automate a partir d'un fichier .descr
         String mot = "";
         String tabmot;
 
         while (true) {
-
-
             ArrayList tabtemp;
             System.out.println("Entrez un mot : ");
             Scanner sc = new Scanner(System.in);
             mot = sc.nextLine();
-
+            if(mot.equals(" ")){
+                throw new Exception("un espace n'est pas un mot");
+            }
             tabmot = mot.split("###")[0];
             String[] mots = tabmot.split(" ");
 
@@ -172,19 +191,21 @@ public class MoteurAutomate {
                         flague = false;
                         break;
                     }
-                    for (int j = 0; j < Transitions.size(); j++) { // on parcours l'array qui contient les transition
-                        tabtemp = Transitions.get(j); //recup le transition courante
+                    for (int j = 0; j < Transitions.size(); j++) {                          // on parcours l'array qui contient les transition
+                        tabtemp = Transitions.get(j);                                           //recup le transition courante
                         // parcours la transition
-                        if (Integer.parseInt((String) tabtemp.get(0)) == EtatTemp) { //On verify que le point de depart de la transition est bien le meme que l'etat init
-                            if (temp.equals(tabtemp.get(1))) { //on verifie que le caractère du mot est bien celui qui va etre consommer
+                        if (Integer.parseInt((String) tabtemp.get(0)) == EtatTemp) {                 //On verify que le point de depart de la transition est bien le meme que l'etat init
+                            if (temp.equals(tabtemp.get(1))) {                                           //on verifie que le caractère du mot est bien celui qui va etre consommer
                                 System.out.println("Transition de " + EtatTemp + " vers " + (String) tabtemp.get(2));
-                                EtatTemp = Integer.parseInt(String.valueOf(tabtemp.get(2))); //changement d'etat
-                                if (tabtemp.size() == 4) { // si il y a un caractère en sortit on le met dans mot retour
+                                EtatTemp = Integer.parseInt(String.valueOf(tabtemp.get(2)));             //changement d'etat
+                                if (tabtemp.size() == 4) {                                               // si il y a un caractère en sortit on le met dans mot retour
                                     if (motRetour.equals("###")) {
                                         break;
                                     } else {
                                         motRetour += (String) tabtemp.get(3);
                                     }
+                                }else {
+                                    break;
                                 }
                             }
                         }
@@ -196,8 +217,10 @@ public class MoteurAutomate {
                 if (flague) {
                     if (EtatAcceptant.contains((String.valueOf(EtatTemp)))) { //ici on verifie que l'etat sur lequel on est,est bien acceptant
                         System.out.println("Acceptant -> mot valide : " + motRetour);
+                        EtatFinal=EtatTemp;
                     } else {
                         System.out.println("Pas acceptant -> mot final non valide " + motRetour);
+                        EtatFinal=EtatTemp;
                     }
                 }
             }
@@ -205,12 +228,126 @@ public class MoteurAutomate {
     }
 
 
+    public int getEtatFinal() {
+        return EtatFinal;
+    }
 
-    public static void main(String[] args) throws IOException {
+    public String fonctionneTest(String str) throws Exception { // cette fonction doit pouvoir faire fonctionner n'importe quel automate a partir d'un fichier .descr
+        String mot = str;
+        String tabmot;
+        String motRetour = "";
+        if(str.equals(" ")){
+            throw new Exception("un espace n'est pas un mot");
+        }
+        //while (true) {
+        ArrayList tabtemp;
+        System.out.println("Entrez un mot : ");
+        // Scanner sc = new Scanner(System.in);
+        //mot = sc.nextLine();
+
+        tabmot = mot.split("###")[0];
+        String[] mots = tabmot.split(" ");
+/*
+            if (mot.equals("exit")) {
+                break;
+            }
+            */
+        for (String motLut : mots) {
+            motRetour = "";
+            boolean flague = true;
+            int EtatTemp = EtatInit;
+            boolean continuer = true;
+            System.out.println("Mot d'entree : " + motLut);
+
+
+            for (int i = 0; i < motLut.length(); i++) {
+                String temp = String.valueOf(motLut.charAt(i));
+                if (!this.VocEntree.contains(temp)) //on parcours le mot en entrée
+                {
+                    System.out.println("Caractere pas dans le vocabulaire d'entree");
+                    flague = false;
+                    break;
+                }
+                for (int j = 0; j < Transitions.size(); j++) {                          // on parcours l'array qui contient les transition
+                    tabtemp = Transitions.get(j);                                           //recup le transition courante
+                    // parcours la transition
+                    if (Integer.parseInt((String) tabtemp.get(0)) == EtatTemp) {                 //On verify que le point de depart de la transition est bien le meme que l'etat init
+                        if (temp.equals(tabtemp.get(1))) {                                           //on verifie que le caractère du mot est bien celui qui va etre consommer
+                            System.out.println("Transition de " + EtatTemp + " vers " + (String) tabtemp.get(2));
+                            EtatTemp = Integer.parseInt(String.valueOf(tabtemp.get(2)));             //changement d'etat
+                            if (tabtemp.size() == 4) {                                               // si il y a un caractère en sortit on le met dans mot retour
+                                if (motRetour.equals("###")) {
+                                    break;
+                                } else {
+                                    motRetour += (String) tabtemp.get(3);
+                                }
+                            }else {
+                                break;
+                            }
+                        }
+                    }
+
+                }
+
+            }
+
+            if (flague) {
+                if (EtatAcceptant.contains((String.valueOf(EtatTemp)))) { //ici on verifie que l'etat sur lequel on est,est bien acceptant
+                    EtatFinal=EtatTemp;
+                    System.out.println("Acceptant -> mot valide : " + motRetour);
+                } else {
+                    EtatFinal=EtatTemp;
+                    System.out.println("Pas acceptant -> mot final non valide " + motRetour);
+                }
+            }
+        }
+
+        return motRetour;
+    }
+
+
+    public ArrayList<ArrayList> getTransitions() {
+        return Transitions;
+    }
+
+    public ArrayList<ArrayList> getEtats() {
+        return Etatslambda;
+    }
+
+    public void graphe() throws FileNotFoundException {
+        PrintWriter writer = new PrintWriter("test.dot");
+        writer.println("digraph test");
+        writer.println("{");
+        for (int i =0;i<this.getTransitions().size();i++)
+        {   ArrayList temp = this.getTransitions().get(i);
+
+            writer.println("etat"+temp.get(0)+"->etat"+temp.get(2));
+            writer.println("[label="+temp.get(1)+"]");
+
+        }
+        writer.println("}");
+        writer.close();
+
+        Runtime rt = Runtime.getRuntime();
+        try {
+            Process pr = rt.exec(" dot -Tpng -o  graphe.png test.dot");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
     MoteurAutomate automate = new MoteurAutomate();
-    automate.constructAutomate("testMoteur/S2.descr");
+    automate.constructAutomate("testDeterminisation/ND01.descr");
        System.out.println(automate);
-       automate.fonctionne();
+      // automate.fonctionne();
+      automate.graphe();
+        System.out.println(automate.Etatslambda.size());
+      for (int i=0;i<automate.Etatslambda.size();i++)
+      {
+
+          System.out.println(automate.Etatslambda.get(i));
+      }
     }
 
 
